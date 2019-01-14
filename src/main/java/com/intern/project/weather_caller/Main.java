@@ -12,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -38,19 +39,29 @@ public class Main extends Application {
 			}
 		});
 		btn.setOnAction(e -> {
-			//Parse user input
+			//Take user input
 			String input = userInputBox.getText();
 			OpenWeatherMapClient client = new OpenWeatherMapClient();
 			JSONObject object = client.getJsonObject(input);
-			//Only allows US requests.
+			
+			//Only allows US requests... should have asked first.
 			String result = (String) object.get("name");
-			System.out.println(result);
-			System.out.println(object.toJSONString());
+			
+			System.out.println(result);//Tracer
+			System.out.println(object.toJSONString()); //Tracer
+			
 			JSONObject jA = (JSONObject) object.get("main");
-			System.out.println(jA.toJSONString());
+			System.out.println(jA.toJSONString()); //Tracer
+			
+			//Result
 			Double temp = (Double) jA.get("temp");
 			Double fahTemp = (Double) ((temp - 273.6) * (9.0/5) + 32);
-			System.out.println("Temperture is " + fahTemp.shortValue() + " degrees fahrenheit.");
+			Text userInputCity = new Text(input + " weather:");
+			Text tempResult = new Text(fahTemp.shortValue() + " degrees Fahrenheit.");
+			
+			//Add to Pane
+			gridPane.add(userInputCity, 0, 2);
+			gridPane.add(tempResult, 0, 3);
 			commandSuccessful = true;
 			if (commandSuccessful) {
 				//Show info
