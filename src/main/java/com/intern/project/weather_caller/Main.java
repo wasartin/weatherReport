@@ -75,7 +75,6 @@ public class Main extends Application {
 		gridPane.add(btn, 1, 1);
 		primaryStage.setScene(new Scene(gridPane, 647, 400));//gotta have that golden ratio
 		primaryStage.show();
-
 	}
 	
 	public static void main(String[] args) {
