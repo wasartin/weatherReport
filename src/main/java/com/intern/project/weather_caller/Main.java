@@ -26,7 +26,7 @@ public class Main extends Application {
 		gridPane.setPadding(new Insets(10, 10, 10, 10)); 
 		gridPane.setAlignment(Pos.BASELINE_CENTER);
 		
-		Label instruction = new Label("Enter a City and State below.");
+		Label instruction = new Label("Enter a City located in US below.");
 		TextField userInputBox = new TextField();
 		Button btn = new Button("Go!");
 		Text userInputCity = new Text();
@@ -43,6 +43,7 @@ public class Main extends Application {
 			String input = userInputBox.getText();
 			OpenWeatherMapClient client = new OpenWeatherMapClient();
 			
+			userInputCity.setText(input + " weather:De");
 			tempResult.setText(client.getTempForCity(input) + " degrees Fahrenheit.");
 			commandSuccessful = true;
 			if (commandSuccessful) {

@@ -63,7 +63,7 @@ public class OpenWeatherMapClient {
 		} catch (Exception e) {
 			System.err.println(e);
 		}
-		return result;
+		return (JSONObject) result.get("main");//Double check
 	}
 	
 	public int getTempForCity(String cityName) {
@@ -71,10 +71,9 @@ public class OpenWeatherMapClient {
 		if(cachedMap.containsKey(foundLoc.getID())) {
 			return cachedMap.get(foundLoc.getID());
 		}
-		JSONObject jA = findByID(foundLoc.getID());
 		
-		//Result
-		Double temp = (Double) jA.get("temp");
+		JSONObject foundCity = findByID(foundLoc.getID());
+		Double temp = (Double) foundCity.get("temp");
 		Double fahTemp = (Double) ((temp - 273.6) * (9.0/5) + 32);
 		
 		//Website recomended just cached all the results, b/c there is a limit to number of 
