@@ -1,8 +1,5 @@
 package com.intern.project.weather_caller;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -32,6 +29,9 @@ public class Main extends Application {
 		Label instruction = new Label("Enter a City and State below.");
 		TextField userInputBox = new TextField();
 		Button btn = new Button("Go!");
+		Text userInputCity = new Text();
+		Text tempResult = new Text();
+		
 		//this allows the user to either click the button or just press enter in the textbox
 		userInputBox.setOnKeyPressed(event -> {
 			if (event.getCode() == KeyCode.ENTER) {
@@ -42,26 +42,8 @@ public class Main extends Application {
 			//Take user input
 			String input = userInputBox.getText();
 			OpenWeatherMapClient client = new OpenWeatherMapClient();
-			JSONObject object = client.getJsonObject(input);
 			
-			//Only allows US requests... should have asked first.
-			String result = (String) object.get("name");
-			
-			System.out.println(result);//Tracer
-			System.out.println(object.toJSONString()); //Tracer
-			
-			JSONObject jA = (JSONObject) object.get("main");
-			System.out.println(jA.toJSONString()); //Tracer
-			
-			//Result
-			Double temp = (Double) jA.get("temp");
-			Double fahTemp = (Double) ((temp - 273.6) * (9.0/5) + 32);
-			Text userInputCity = new Text(input + " weather:");
-			Text tempResult = new Text(fahTemp.shortValue() + " degrees Fahrenheit.");
-			
-			//Add to Pane
-			gridPane.add(userInputCity, 0, 2);
-			gridPane.add(tempResult, 0, 3);
+			tempResult.setText(client.getTempForCity(input) + " degrees Fahrenheit.");
 			commandSuccessful = true;
 			if (commandSuccessful) {
 				//Show info
@@ -73,6 +55,8 @@ public class Main extends Application {
 		gridPane.add(instruction, 0, 0);
 		gridPane.add(userInputBox, 0, 1);
 		gridPane.add(btn, 1, 1);
+		gridPane.add(userInputCity, 0, 2);
+		gridPane.add(tempResult, 0, 3);
 		primaryStage.setScene(new Scene(gridPane, 647, 400));//gotta have that golden ratio
 		primaryStage.show();
 	}
