@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import org.apache.http.HttpException;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
@@ -20,14 +21,11 @@ public class DataSource {
 	private static final String MEDIA_TYPE = "application/json";
 	private static final String BASE_URL_BY_ID = "http://api.openweathermap.org/data/2.5/weather?id=%s&APPID=%s";
 	
-	//This should go into its own class, like a singleton for a Connection class
 	private static CloseableHttpClient httpClient;
 	private static HttpGet httpGet;
 	private static CloseableHttpResponse httpResponse;
 	
-	
 	public DataSource() {
-		
 	}
 	
 	public JSONObject getResponse(long inputID) {
@@ -38,7 +36,7 @@ public class DataSource {
 		try {
 			httpResponse = httpClient.execute(httpGet);
 			if(httpResponse.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-				System.out.println(httpResponse.getStatusLine().getStatusCode());
+				throw new HttpException("");
 			}
 			InputStream responseContent = httpResponse.getEntity().getContent();
 			JSONParser jsonParser = new JSONParser();
@@ -52,7 +50,6 @@ public class DataSource {
 		} catch (Exception e) {
 			System.err.println(e);
 		}
-		
 		return (JSONObject) result.get("main");
 	}
 }

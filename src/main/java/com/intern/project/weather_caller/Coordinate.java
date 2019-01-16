@@ -1,22 +1,24 @@
 package com.intern.project.weather_caller;
 
 public class Coordinate {
-	private double longitude;
-	private double latitude;
+	private Double longitude;
+	private Double latitude;
 	
-	public Coordinate(double longitude, double latitude) {
+	public Coordinate(Double longitude, Double latitude) {
 		this.longitude = longitude;
 		this.latitude = latitude;
 	}
 	
 	public Coordinate(Object longitude, Object latitude) {
+		this.longitude = (Double)longitude;
+		this.latitude = (Double)latitude;
 	}
 	
-	public double getLongitude() {
+	public Double getLongitude() {
 		return this.longitude;
 	}
 	
-	public double getLatitude() {
+	public Double getLatitude() {
 		return this.latitude;
 	}
 	

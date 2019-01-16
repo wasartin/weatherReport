@@ -1,15 +1,13 @@
 package com.intern.project.weather_caller;
 
 public class GeographicLocation {
-	
-	//JSON either returns long or Integer
+
 	private long id;
 	private String cityName;
 	private String country;
 	private Coordinate coordinate;
 	
 	public GeographicLocation() {
-		
 	}
 	
 	public GeographicLocation(long id, String cityName, String country, Coordinate coordinate) {
