@@ -28,16 +28,13 @@ public class DataSource {
 	public DataSource() {
 	}
 	
-	public JSONObject getResponse(long inputID) {
+	public JSONObject getResponse(long inputID) throws HttpException{
 		JSONObject result = null;
 		httpClient = HttpClientBuilder.create().build();
 		httpGet = new HttpGet(String.format(BASE_URL_BY_ID, inputID, API_KEY));
 		httpGet.addHeader(HttpHeaders.CONTENT_TYPE, MEDIA_TYPE);
 		try {
 			httpResponse = httpClient.execute(httpGet);
-			if(httpResponse.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-				throw new HttpException("");
-			}
 			InputStream responseContent = httpResponse.getEntity().getContent();
 			JSONParser jsonParser = new JSONParser();
 			result = (JSONObject)jsonParser.parse(new InputStreamReader(responseContent, "UTF-8"));
@@ -49,7 +46,11 @@ public class DataSource {
 			e.printStackTrace();
 		} catch (Exception e) {
 			System.err.println(e);
+		}finally {
+			if(httpResponse.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+				throw new HttpException("Received Code: " + httpResponse.getStatusLine().getStatusCode());
+			}
 		}
-		return (JSONObject) result.get("main");
+		return (JSONObject) result;
 	}
 }

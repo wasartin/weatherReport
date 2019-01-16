@@ -1,5 +1,7 @@
 package com.intern.project.weather_caller;
 
+import org.apache.http.HttpException;
+
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -40,7 +42,11 @@ public class Main extends Application {
 			OpenWeatherMapClient client = new OpenWeatherMapClient();
 			
 			userInputCity.setText(input + " weather:");
-			tempResult.setText(client.getTempForCity(input) + " degrees Fahrenheit.");
+			try {
+				tempResult.setText(client.getTempForCity(input) + " degrees Fahrenheit.");
+			} catch (HttpException e1) {
+				e1.printStackTrace();
+			}
 		});
 
 		gridPane.add(instruction, 0, 0);

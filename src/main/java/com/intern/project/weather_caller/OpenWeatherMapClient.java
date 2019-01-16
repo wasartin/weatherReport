@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import org.apache.http.HttpException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -46,7 +47,7 @@ public class OpenWeatherMapClient {
 		dataSource = new DataSource();
 	}
 	
-	public JSONObject findByID(long id) {
+	public JSONObject findByID(long id) throws HttpException {
 		return dataSource.getResponse(id);//Double check
 	}
 	
@@ -55,14 +56,16 @@ public class OpenWeatherMapClient {
 	 * To ensure that doesn't happen, I store the city's id and temp in a Map
 	 * @param cityName
 	 * @return temperature
+	 * @throws HttpException 
 	 */
-	public int getTempForCity(String cityName) {
+	public int getTempForCity(String cityName) throws HttpException {
 		GeographicLocation foundLoc = getGeoLocation(cityName);
 		if(cachedMap.containsKey(foundLoc.getID())) {
 			return cachedMap.get(foundLoc.getID());
 		}
 		
-		JSONObject foundCity = findByID(foundLoc.getID());
+		JSONObject foundCity = (JSONObject) findByID(foundLoc.getID()).get("main");
+		
 		Double temp = (Double) foundCity.get("temp");
 		Double fahTemp = (Double) ((temp - 273.6) * (9.0/5) + 32);
 		

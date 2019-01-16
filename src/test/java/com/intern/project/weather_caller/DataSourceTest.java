@@ -1,23 +1,35 @@
 package com.intern.project.weather_caller;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.apache.http.HttpException;
 
+import org.json.simple.JSONObject;
+import org.junit.Assert;
 import org.junit.Rule;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-class DataSourceTest {
+public class DataSourceTest {
+	
+	private static DataSource dataSource;
 	
 	@Rule
 	public final ExpectedException thrown = ExpectedException.none(); 
 
 	@Test
-	void getResponseTest_Success() {
-		fail("Not yet implemented");
+	public void getResponseTest_Success() throws HttpException {
+		dataSource = new DataSource();
+		long desMoinesID = 4853828;
+		String expectedCityName = "Des Moines";
+		JSONObject jsonObject = dataSource.getResponse(desMoinesID);
+		String actualCityName = (String)jsonObject.get("name");
+		Assert.assertEquals(expectedCityName, actualCityName);
 	}
 	
 	@Test
-	void getResponseTest_Fail() {
-		fail("Not yet implemented");
+	public void getResponseTest_Fail() throws HttpException {
+		dataSource = new DataSource();
+		long idNotInFile = 4598651;
+		thrown.expect(HttpException.class);
+		dataSource.getResponse(idNotInFile);
 	}
 }
