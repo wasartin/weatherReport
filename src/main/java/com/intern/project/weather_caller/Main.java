@@ -13,12 +13,10 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-	private boolean commandSuccessful = false;
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		primaryStage.setTitle("What's the Weather?");
-		//init();
 		
 		GridPane gridPane = new GridPane();
 		gridPane.setVgap(5); 
@@ -32,25 +30,17 @@ public class Main extends Application {
 		Text userInputCity = new Text();
 		Text tempResult = new Text();
 		
-		//this allows the user to either click the button or just press enter in the textbox
 		userInputBox.setOnKeyPressed(event -> {
 			if (event.getCode() == KeyCode.ENTER) {
 				btn.fire();
 			}
 		});
 		btn.setOnAction(e -> {
-			//Take user input
 			String input = userInputBox.getText();
 			OpenWeatherMapClient client = new OpenWeatherMapClient();
 			
-			userInputCity.setText(input + " weather:De");
+			userInputCity.setText(input + " weather:");
 			tempResult.setText(client.getTempForCity(input) + " degrees Fahrenheit.");
-			commandSuccessful = true;
-			if (commandSuccessful) {
-				//Show info
-			} else {
-				//ask again
-			}
 		});
 
 		gridPane.add(instruction, 0, 0);
@@ -58,7 +48,7 @@ public class Main extends Application {
 		gridPane.add(btn, 1, 1);
 		gridPane.add(userInputCity, 0, 2);
 		gridPane.add(tempResult, 0, 3);
-		primaryStage.setScene(new Scene(gridPane, 647, 400));//gotta have that golden ratio
+		primaryStage.setScene(new Scene(gridPane, 647, 400));
 		primaryStage.show();
 	}
 	

@@ -21,6 +21,12 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+/**
+ * This class immedialtey loads the .json file into a JSONArray that can be accessed throughout
+ * the lifetime of the object.
+ * @author watis
+ *
+ */
 public class OpenWeatherMapClient {
 
 	private static final String API_KEY = "e3072a490add9ea37b2f06bbd0f9ae84";
@@ -34,36 +40,32 @@ public class OpenWeatherMapClient {
 	
 	private static Map<Long, Integer> cachedMap = new HashMap<Long, Integer>();
 	
+	private static JSONArray usCities;
+	
+	//Load jsonFile into usCities array
+	static {
+		JSONParser parser = new JSONParser();
+		try {
+			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+			File file = new File(classLoader.getResource("usCities.json").getFile());
+			usCities = (JSONArray) parser.parse(new FileReader(file.getAbsolutePath()));	
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public OpenWeatherMapClient() {
 		
 	}
 	
 	public JSONObject findByID(long id) {
 		JSONObject result = new JSONObject();
-		
-		httpClient = HttpClientBuilder.create().build();
-		httpGet = new HttpGet(String.format(BASE_URL_BY_ID, id, API_KEY));
-		httpGet.addHeader(HttpHeaders.CONTENT_TYPE, MEDIA_TYPE);
-		
-		try {
-			httpResponse = httpClient.execute(httpGet);
-			if(httpResponse.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
-				System.out.println(httpResponse.getStatusLine().getStatusCode());
-			}
-			InputStream responseContent = httpResponse.getEntity().getContent();
-			JSONParser jsonParser = new JSONParser();
-			result = (JSONObject)jsonParser.parse(new InputStreamReader(responseContent, "UTF-8"));
-			httpResponse.close(); 
-			httpClient.close();
-
-		} catch (ClientProtocolException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			System.err.println(e);
-		}
-		return (JSONObject) result.get("main");//Double check
+		DataSource ds = new DataSource();
+		return ds.getResponse(id);//Double check
 	}
 	
 	public int getTempForCity(String cityName) {
@@ -84,37 +86,20 @@ public class OpenWeatherMapClient {
 	}
 	
 	//Made public for testing
-	//TODO iterate once, and then lets do a hashmap instead of this garbage.
-	//TODO regex matching would be awesome
 	public GeographicLocation getGeoLocation(String inputCity) {
-		JSONParser parser = new JSONParser();
 		GeographicLocation result = new GeographicLocation();
-		try {
-			//find the usCitiesJson file
-			ClassLoader classLoader = getClass().getClassLoader();
-			File file = new File(classLoader.getResource("usCities.json").getFile());
-			JSONArray originalArray = (JSONArray) parser.parse(new FileReader(file.getAbsolutePath()));
-			
-			for(int i = 0; i < originalArray.size(); i++) {
-				JSONObject tempObj = (JSONObject) originalArray.get(i);
-				if(((String)tempObj.get("name")).equalsIgnoreCase(inputCity)) {
-					result.setID((long)tempObj.get("id"));
-					result.setCityName((String)tempObj.get("name"));
-					result.setCountry((String)tempObj.get("country"));
-					
-					JSONObject coordObj = (JSONObject) tempObj.get("coord");
-					Coordinate coordinate = new Coordinate(coordObj.get("lon"), coordObj.get("lan"));
-					result.setCoordinate(coordinate);
-				}
-			}	
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+		for(int i = 0; i < usCities.size(); i++) {
+			JSONObject tempObj = (JSONObject) usCities.get(i);
+			if(((String)tempObj.get("name")).equalsIgnoreCase(inputCity)) {//ugly
+				result.setID((long)tempObj.get("id"));
+				result.setCityName((String)tempObj.get("name"));
+				result.setCountry((String)tempObj.get("country"));
+				
+				JSONObject coordObj = (JSONObject) tempObj.get("coord");
+				Coordinate coordinate = new Coordinate(coordObj.get("lon"), coordObj.get("lan"));
+				result.setCoordinate(coordinate);
+			}
+		}	
 		return result;
 	}
-	
 }
